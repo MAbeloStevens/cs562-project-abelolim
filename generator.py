@@ -7,11 +7,11 @@ def main():
     needed to run the query. That generated code should be saved to a 
     file (e.g. _generated.py) and then run.
     """
+    
+    mode = input("To test a relational algebra expression, enter input mode (terminal, file): ")
 
     body = """
-    for row in cur:
-        if row['quant'] > 10:
-            _global.append(row)
+
     """
 
     # Note: The f allows formatting with variables.

@@ -164,7 +164,7 @@ def insertGroupCases(n, F):
 
 
 def main():
-    S, n, V, F, SVect, G = getInput()
+    S, n, V, F, SVect, G = setInputTest()
 
     """
     This is the generator code. It should take in the MF structure and generate the code
@@ -197,7 +197,11 @@ def main():
                     match sc:
                         {insertGroupCases(n, F)}
                 else:
-                    continue      
+                    continue 
+
+    # construct output in _global
+    for e in mf_struct:
+        _global.append([{stringArrayToCommaString(map(lambda s: f"e.{s}", S))}])
     """
 
     # Note: The f allows formatting with variables.

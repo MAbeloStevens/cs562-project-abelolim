@@ -54,7 +54,11 @@ def query():
                             mf_struct[i].max_0_quant = max(mf_struct[i].max_0_quant, row['quant'])
                             
                 else:
-                    continue      
+                    continue 
+
+    # construct output in _global
+    for e in mf_struct:
+        _global.append([e.cust, e.prod, e.avg_0_quant, e.max_0_quant])
     
     
     return tabulate.tabulate(_global, headers="keys", tablefmt="psql")

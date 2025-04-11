@@ -1,5 +1,19 @@
 import subprocess
 
+V = ['cust']
+F = ['sum_1_quant', 'sum_2_quant', 'sum_3_quant']
+
+def stringArrayToCommaString(stringArray):
+    # given a string array, returns a single string of each element in the same string separated by commas and spaces
+    return ', '.join(stringArray)
+
+def setStructFields(stringArray):
+    # given a string array, returns a multiline string to set struct fields given input parameters
+    outputString = ""
+    for str in stringArray:
+        outputString = outputString + f"self.{str} = {str}\n            "
+    return outputString
+
 
 def main():
     """
@@ -8,10 +22,12 @@ def main():
     file (e.g. _generated.py) and then run.
     """
     
-    mode = input("To test a relational algebra expression, enter input mode (terminal, file): ")
+    # mode = input("To test a relational algebra expression, enter input mode (terminal, file): ")
 
-    body = """
-
+    body = f"""
+    class struct:
+        def __init__(self, {stringArrayToCommaString(V)}, {stringArrayToCommaString(F)}):
+            {setStructFields(V)}{setStructFields(F)}
     """
 
     # Note: The f allows formatting with variables.
@@ -40,8 +56,7 @@ def query():
     _global = []
     {body}
     
-    return tabulate.tabulate(_global,
-                        headers="keys", tablefmt="psql")
+    return tabulate.tabulate(_global, headers="keys", tablefmt="psql")
 
 def main():
     print(query())

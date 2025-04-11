@@ -21,13 +21,19 @@ def query():
     
     _global = []
     
+    class struct:
+        def __init__(self, cust, sum_1_quant, sum_2_quant, sum_3_quant):
+            self.cust = cust
+            self.sum_1_quant = sum_1_quant
+            self.sum_2_quant = sum_2_quant
+            self.sum_3_quant = sum_3_quant
+    
     for row in cur:
-        if row['quant'] > 10:
+        if row['state'] == 'NJ':
             _global.append(row)
+            
     
-    
-    return tabulate.tabulate(_global,
-                        headers="keys", tablefmt="psql")
+    return tabulate.tabulate(_global, headers="keys", tablefmt="psql")
 
 def main():
     print(query())

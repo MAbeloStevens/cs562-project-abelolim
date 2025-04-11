@@ -165,7 +165,7 @@ def insertGroupCases(n, F):
 
 def main():
     S, n, V, F, SVect, G = setInputTest()
-    W = "row['year']== 2009"
+    W = "row['year']== 2016" #cuz nothing comes up 2009
 
     """
     This is the generator code. It should take in the MF structure and generate the code

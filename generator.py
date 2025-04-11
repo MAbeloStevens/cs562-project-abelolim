@@ -165,6 +165,7 @@ def insertGroupCases(n, F):
 
 def main():
     S, n, V, F, SVect, G = setInputTest()
+    W = 'row.year == 2009'
 
     """
     This is the generator code. It should take in the MF structure and generate the code
@@ -175,13 +176,19 @@ def main():
     # mode = input("To test a relational algebra expression, enter input mode (terminal, file): ")
 
     body = f"""
+    T = []
+    # get the table
+    for row in cur:
+        if {W}:
+            T.append(row)
+    
     class struct:
         def __init__(self, {stringArrayToCommaString(V)}, {stringArrayToCommaString(F)}):
             {setStructFields(V)}{setStructFields(F)}
 
     # scan table to fill mf_struct
     mf_struct = []
-    for row in cur:
+    for row in T:
         if next((i for i, e in enumerate(mf_struct) if {matchGroupByString(V)}), -1) != -1:
             continue
         else:
@@ -189,7 +196,7 @@ def main():
 
     # start scanning to calculate aggregates
     for sc in range({n + 1}):
-        for row in cur:
+        for row in T:
             for i, e in enumerate(mf_struct):
                 # check if grouping variable is satisfied
                 if {matchGroupByString(V)} and {'True'}: # true replaced with formatted such that clause for sc
@@ -225,7 +232,7 @@ def query():
     conn = psycopg2.connect("dbname="+dbname+" user="+user+" password="+password,
                             cursor_factory=psycopg2.extras.DictCursor)
     cur = conn.cursor()
-    cur.execute("SELECT * FROM sales{" where year=2009"}")
+    cur.execute("SELECT * FROM sales")
     
     _global = []
     {body}

@@ -17,9 +17,15 @@ def query():
     conn = psycopg2.connect("dbname="+dbname+" user="+user+" password="+password,
                             cursor_factory=psycopg2.extras.DictCursor)
     cur = conn.cursor()
-    cur.execute("SELECT * FROM sales where year=2009")
+    cur.execute("SELECT * FROM sales")
     
     _global = []
+    
+    T = []
+    # get the table
+    for row in cur:
+        if row.year == 2009:
+            T.append(row)
     
     class struct:
         def __init__(self, cust, prod, count_0_quant, sum_0_quant, avg_0_quant, max_0_quant):
@@ -33,7 +39,7 @@ def query():
 
     # scan table to fill mf_struct
     mf_struct = []
-    for row in cur:
+    for row in T:
         if next((i for i, e in enumerate(mf_struct) if e.cust == row['cust'] and e.prod == row['prod']), -1) != -1:
             continue
         else:
@@ -41,7 +47,7 @@ def query():
 
     # start scanning to calculate aggregates
     for sc in range(1):
-        for row in cur:
+        for row in T:
             for i, e in enumerate(mf_struct):
                 # check if grouping variable is satisfied
                 if e.cust == row['cust'] and e.prod == row['prod'] and True: # true replaced with formatted such that clause for sc

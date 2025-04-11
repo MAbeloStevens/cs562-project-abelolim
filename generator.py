@@ -165,7 +165,7 @@ def insertGroupCases(n, F):
 
 def main():
     S, n, V, F, SVect, G = setInputTest()
-    W = 'row.year == 2009'
+    W = "row['year']== 2009"
 
     """
     This is the generator code. It should take in the MF structure and generate the code
@@ -176,8 +176,8 @@ def main():
     # mode = input("To test a relational algebra expression, enter input mode (terminal, file): ")
 
     body = f"""
-    T = []
     # get the table
+    T = []
     for row in cur:
         if {W}:
             T.append(row)

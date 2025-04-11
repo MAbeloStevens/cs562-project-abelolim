@@ -21,10 +21,10 @@ def query():
     
     _global = []
     
-    T = []
     # get the table
+    T = []
     for row in cur:
-        if row.year == 2009:
+        if row['year']== 2009:
             T.append(row)
     
     class struct:

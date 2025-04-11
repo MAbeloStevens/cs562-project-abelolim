@@ -156,7 +156,7 @@ def insertGroupCases(n, F):
                         out = out + f"""mf_struct[i].{'_'.join(fd)} = row['{fd[2]}'] if mf_struct[i].{'_'.join(fd)} == 0 else min(mf_struct[i].{'_'.join(fd)}, row['{fd[2]}'])
                             """
                     case 'avg':
-                        out = out + f"""mf_struct[i].{'_'.join(fd)} = mf_struct[i].{'_'.join(['sum'] + fd[1:])} + mf_struct[i].{'_'.join(['count'] + fd[1:])}
+                        out = out + f"""mf_struct[i].{'_'.join(fd)} = mf_struct[i].{'_'.join(['sum'] + fd[1:])} / mf_struct[i].{'_'.join(['count'] + fd[1:])}
                             """
                     case _:
                         raise ValueError(f"Aggregate function not recognized: {fd[0]}")

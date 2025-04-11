@@ -17,21 +17,45 @@ def query():
     conn = psycopg2.connect("dbname="+dbname+" user="+user+" password="+password,
                             cursor_factory=psycopg2.extras.DictCursor)
     cur = conn.cursor()
-    cur.execute("SELECT * FROM sales")
+    cur.execute("SELECT * FROM sales where year=2009")
     
     _global = []
     
     class struct:
-        def __init__(self, cust, sum_1_quant, sum_2_quant, sum_3_quant):
+        def __init__(self, cust, prod, count_0_quant, sum_0_quant, avg_0_quant, max_0_quant):
             self.cust = cust
-            self.sum_1_quant = sum_1_quant
-            self.sum_2_quant = sum_2_quant
-            self.sum_3_quant = sum_3_quant
-    
-    for row in cur:
-        if row['state'] == 'NJ':
-            _global.append(row)
+            self.prod = prod
+            self.count_0_quant = count_0_quant
+            self.sum_0_quant = sum_0_quant
+            self.avg_0_quant = avg_0_quant
+            self.max_0_quant = max_0_quant
             
+
+    # scan table to fill mf_struct
+    mf_struct = []
+    for row in cur:
+        if next((i for i, e in enumerate(mf_struct) if e.cust == row['cust'] and e.prod == row['prod']), -1) != -1:
+            continue
+        else:
+            mf_struct.append(struct(row['cust'], row['prod'], 0, 0, 0, 0))
+
+    # start scanning to calculate aggregates
+    for sc in range(1):
+        for row in cur:
+            for i, e in enumerate(mf_struct):
+                # check if grouping variable is satisfied
+                if e.cust == row['cust'] and e.prod == row['prod'] and True: # true replaced with formatted such that clause for sc
+                    # update aggregates
+                    match sc:
+                        case 0:
+                            mf_struct[i].count_0_quant = mf_struct[i].count_0_quant + 1
+                            mf_struct[i].sum_0_quant = mf_struct[i].sum_0_quant + row['quant']
+                            mf_struct[i].avg_0_quant = mf_struct[i].sum_0_quant + mf_struct[i].count_0_quant
+                            mf_struct[i].max_0_quant = max(mf_struct[i].max_0_quant, row['quant'])
+                            
+                else:
+                    continue      
+    
     
     return tabulate.tabulate(_global, headers="keys", tablefmt="psql")
 

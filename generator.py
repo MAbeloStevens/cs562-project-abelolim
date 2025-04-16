@@ -179,7 +179,7 @@ def main():
     # get the table
     T = []
     for row in cur:
-        if {W}:
+        if {"True" if len(W) == 0 else W}:
             T.append(row)
     
     class struct:
@@ -206,9 +206,10 @@ def main():
                 else:
                     continue 
 
-    # construct output in _global
+    # construct output in _global with having in mind
     for e in mf_struct:
-        _global.append([{stringArrayToCommaString(map(lambda s: f"e.{s}", S))}])
+        if {"True" if len(G) == 0 else G}:
+            _global.append([{stringArrayToCommaString(map(lambda s: f"e.{s}", S))}])
     """
 
     # Note: The f allows formatting with variables.
@@ -237,7 +238,7 @@ def query():
     _global = []
     {body}
     
-    return tabulate.tabulate(_global, headers="keys", tablefmt="psql")
+    return tabulate.tabulate(_global, headers=[{stringArrayToCommaString(map(lambda s: f"'{s}'", S))}], tablefmt="psql")
 
 def main():
     print(query())

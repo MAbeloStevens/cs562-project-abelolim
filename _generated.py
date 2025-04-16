@@ -56,18 +56,19 @@ def query():
                         case 0:
                             mf_struct[i].count_0_quant = mf_struct[i].count_0_quant + 1
                             mf_struct[i].sum_0_quant = mf_struct[i].sum_0_quant + row['quant']
-                            mf_struct[i].avg_0_quant = mf_struct[i].sum_0_quant + mf_struct[i].count_0_quant
+                            mf_struct[i].avg_0_quant = mf_struct[i].sum_0_quant / mf_struct[i].count_0_quant
                             mf_struct[i].max_0_quant = max(mf_struct[i].max_0_quant, row['quant'])
                             
                 else:
                     continue 
 
-    # construct output in _global
+    # construct output in _global with having in mind
     for e in mf_struct:
-        _global.append([e.cust, e.prod, e.avg_0_quant, e.max_0_quant])
+        if True:
+            _global.append([e.cust, e.prod, e.avg_0_quant, e.max_0_quant])
     
     
-    return tabulate.tabulate(_global, headers="keys", tablefmt="psql")
+    return tabulate.tabulate(_global, headers=['cust', 'prod', 'avg_0_quant', 'max_0_quant'], tablefmt="psql")
 
 def main():
     print(query())

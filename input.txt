@@ -1,0 +1,9 @@
+prod, avg_1_quant, avg_2_quant, avg_3_quant
+3
+prod
+avg_1_quant, avg_2_quant, avg_3_quant
+row['state'] == 'NY', row['state'] == 'NJ', row['state'] == 'CT'
+
+avg_1_quant > avg_2_quant or avg_1_quant > avg_3_quant
+
+e.avg_1_quant > e.avg_2_quant or e.avg_1_quant > e.avg_3_quant

@@ -80,7 +80,7 @@ def getInput():
                 Phi = file.readlines()
                 
                 select = Phi[0].strip().split(", ")
-                numGroupVar = Phi[1].strip()
+                numGroupVar = int(Phi[1].strip())
                 groupAttr = Phi[2].strip().split(", ")
                 aggreFunc = Phi[3].strip().split(", ")
                 predicate = Phi[4].strip().split(", ")
@@ -153,13 +153,13 @@ def insertSuchThatClauses(n, SVect):
     for i in range(1, n+1):
         if (i > 1):
             out = out + " or "
-        out = out + f"(sc == {i} and {SVect[i+1]})"
+        out = out + f"(sc == {i} and {SVect[i-1]})"
     return out + ")"
 
 def insertGroupCases(n, F):
     # given aggregate function array, and number of grouping variables
     # produces the cases for match that update the aggregates for each grouping variable
-    FDecomp = map(lambda f: f.split('_'), F)
+    FDecomp = list(map(lambda f: f.split('_'), F))
     # FDecomp splits f functions into [function, grouping, attrib]
     if(len(F) == 0):
         return ""
@@ -168,34 +168,36 @@ def insertGroupCases(n, F):
         out = out + f"""
                         case {str(i)}:
                             """
+        agg = ""
         for fd in FDecomp:
-            if int(fd[1]) != i:
-                continue
-            else:
+            if int(fd[1]) == i:
                 match fd[0]:
                     case 'count':
-                        out = out + f"""mf_struct[i].{'_'.join(fd)} = mf_struct[i].{'_'.join(fd)} + 1
+                        agg = agg + f"""mf_struct[i].{'_'.join(fd)} = mf_struct[i].{'_'.join(fd)} + 1
                             """
                     case 'sum':
-                        out = out + f"""mf_struct[i].{'_'.join(fd)} = mf_struct[i].{'_'.join(fd)} + row['{fd[2]}']
+                        agg = agg + f"""mf_struct[i].{'_'.join(fd)} = mf_struct[i].{'_'.join(fd)} + row['{fd[2]}']
                             """
                     case 'max':
-                        out = out + f"""mf_struct[i].{'_'.join(fd)} = max(mf_struct[i].{'_'.join(fd)}, row['{fd[2]}'])
+                        agg = agg + f"""mf_struct[i].{'_'.join(fd)} = max(mf_struct[i].{'_'.join(fd)}, row['{fd[2]}'])
                             """
                     case 'min':
-                        out = out + f"""mf_struct[i].{'_'.join(fd)} = row['{fd[2]}'] if mf_struct[i].{'_'.join(fd)} == 0 else min(mf_struct[i].{'_'.join(fd)}, row['{fd[2]}'])
+                        agg = agg + f"""mf_struct[i].{'_'.join(fd)} = row['{fd[2]}'] if mf_struct[i].{'_'.join(fd)} == 0 else min(mf_struct[i].{'_'.join(fd)}, row['{fd[2]}'])
                             """
                     case 'avg':
-                        out = out + f"""mf_struct[i].{'_'.join(fd)} = mf_struct[i].{'_'.join(['sum'] + fd[1:])} / mf_struct[i].{'_'.join(['count'] + fd[1:])}
+                        agg = agg + f"""mf_struct[i].{'_'.join(fd)} = mf_struct[i].{'_'.join(['sum'] + fd[1:])} / mf_struct[i].{'_'.join(['count'] + fd[1:])}
                             """
                     case _:
                         raise ValueError(f"Aggregate function not recognized: {fd[0]}")
+        if len(agg) == 0:
+            agg = "pass"
+        out = out + agg
     return out
 
 
 def main():
     # get inputs
-    S, n, V, F, SVect, G = setInputTest()
+    S, n, V, F, SVect, G = getInput()
     # account for avg in F
     F = accountAvg(F)
     W = "row['year'] == 2016" #cuz nothing comes up 2009

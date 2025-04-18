@@ -29,36 +29,51 @@ def query():
     
     # create structure for mf_struct
     class struct:
-        def __init__(self, cust, prod, count_0_quant, sum_0_quant, avg_0_quant, max_0_quant):
-            self.cust = cust
+        def __init__(self, prod, count_1_quant, sum_1_quant, avg_1_quant, count_2_quant, sum_2_quant, avg_2_quant, count_3_quant, sum_3_quant, avg_3_quant):
             self.prod = prod
-            self.count_0_quant = count_0_quant
-            self.sum_0_quant = sum_0_quant
-            self.avg_0_quant = avg_0_quant
-            self.max_0_quant = max_0_quant
+            self.count_1_quant = count_1_quant
+            self.sum_1_quant = sum_1_quant
+            self.avg_1_quant = avg_1_quant
+            self.count_2_quant = count_2_quant
+            self.sum_2_quant = sum_2_quant
+            self.avg_2_quant = avg_2_quant
+            self.count_3_quant = count_3_quant
+            self.sum_3_quant = sum_3_quant
+            self.avg_3_quant = avg_3_quant
             
 
     # scan table to fill mf_struct
     mf_struct = []
     for row in T:
-        if next((i for i, e in enumerate(mf_struct) if e.cust == row['cust'] and e.prod == row['prod']), -1) != -1:
+        if next((i for i, e in enumerate(mf_struct) if e.prod == row['prod']), -1) != -1:
             continue
         else:
-            mf_struct.append(struct(row['cust'], row['prod'], 0, 0, 0, 0))
+            mf_struct.append(struct(row['prod'], 0, 0, 0, 0, 0, 0, 0, 0, 0))
 
     # start scanning to calculate aggregates
-    for sc in range(1):
+    for sc in range(4):
         for row in T:
             for i, e in enumerate(mf_struct):
                 # check if grouping variable is satisfied
-                if e.cust == row['cust'] and e.prod == row['prod']:
+                if e.prod == row['prod']and ((sc == 1 and row['state'] == 'NY') or (sc == 2 and row['state'] == 'NJ') or (sc == 3 and row['state'] == 'CT')):
                     # update aggregates
                     match sc:
                         case 0:
-                            mf_struct[i].count_0_quant = mf_struct[i].count_0_quant + 1
-                            mf_struct[i].sum_0_quant = mf_struct[i].sum_0_quant + row['quant']
-                            mf_struct[i].avg_0_quant = mf_struct[i].sum_0_quant / mf_struct[i].count_0_quant
-                            mf_struct[i].max_0_quant = max(mf_struct[i].max_0_quant, row['quant'])
+                            pass
+                        case 1:
+                            mf_struct[i].count_1_quant = mf_struct[i].count_1_quant + 1
+                            mf_struct[i].sum_1_quant = mf_struct[i].sum_1_quant + row['quant']
+                            mf_struct[i].avg_1_quant = mf_struct[i].sum_1_quant / mf_struct[i].count_1_quant
+                            
+                        case 2:
+                            mf_struct[i].count_2_quant = mf_struct[i].count_2_quant + 1
+                            mf_struct[i].sum_2_quant = mf_struct[i].sum_2_quant + row['quant']
+                            mf_struct[i].avg_2_quant = mf_struct[i].sum_2_quant / mf_struct[i].count_2_quant
+                            
+                        case 3:
+                            mf_struct[i].count_3_quant = mf_struct[i].count_3_quant + 1
+                            mf_struct[i].sum_3_quant = mf_struct[i].sum_3_quant + row['quant']
+                            mf_struct[i].avg_3_quant = mf_struct[i].sum_3_quant / mf_struct[i].count_3_quant
                             
                 else:
                     continue 
@@ -66,10 +81,10 @@ def query():
     # construct output in _global with having in mind
     for e in mf_struct:
         if True:
-            _global.append([e.cust, e.prod, e.avg_0_quant, e.max_0_quant])
+            _global.append([e.prod, e.avg_1_quant, e.avg_2_quant, e.avg_3_quant])
     
     
-    return tabulate.tabulate(_global, headers=['cust', 'prod', 'avg_0_quant', 'max_0_quant'], tablefmt="psql")
+    return tabulate.tabulate(_global, headers=['prod', 'avg_1_quant', 'avg_2_quant', 'avg_3_quant'], tablefmt="psql")
 
 def main():
     print(query())

@@ -24,9 +24,10 @@ def query():
     # get the table
     T = []
     for row in cur:
-        if row['year']== 2016:
+        if row['year'] == 2016:
             T.append(row)
     
+    # create structure for mf_struct
     class struct:
         def __init__(self, cust, prod, count_0_quant, sum_0_quant, avg_0_quant, max_0_quant):
             self.cust = cust
@@ -50,7 +51,7 @@ def query():
         for row in T:
             for i, e in enumerate(mf_struct):
                 # check if grouping variable is satisfied
-                if e.cust == row['cust'] and e.prod == row['prod'] and True: # true replaced with formatted such that clause for sc
+                if e.cust == row['cust'] and e.prod == row['prod']:
                     # update aggregates
                     match sc:
                         case 0:

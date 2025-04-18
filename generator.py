@@ -12,7 +12,7 @@ def setInputTest():
     S = ['cust', 'prod', 'avg_0_quant', 'max_0_quant']
     n = 0
     V = ['cust', 'prod']
-    F = ['count_0_quant', 'sum_0_quant', 'avg_0_quant', 'max_0_quant']
+    F = ['avg_0_quant', 'max_0_quant']
     SVect = []
     G = ''
     return S, n, V, F, SVect, G
@@ -98,6 +98,32 @@ def getInput():
         case _:
             print("mode not recognized\n")
 
+def accountAvg(F): # <- input array, F = aggregateList
+    # should prepend the added count and sum strings so that they come before their respective avg string
+    outputList = []
+    
+    for aggregate in F: # Main loop
+        splitAggregate = aggregate.split("_")
+        
+        if splitAggregate[0] == "avg": # if aggr is AVG.
+            countAggregate = "count_" + splitAggregate[1] + "_" + splitAggregate[2]
+            sumAggregate = "sum_" + splitAggregate[1] + "_" + splitAggregate[2]
+            if not (countAggregate in aggregate):
+                outputList.append(countAggregate)
+            if not (sumAggregate in aggregate):
+                outputList.append(sumAggregate)
+            outputList.append(aggregate)
+        else: # if aggre is not avg
+            outputList.append(aggregate)
+    
+    # Loop to rid of any repeating functions list(set())'s behavior flipped some values
+    resList = []
+    for aggr in outputList:
+        if aggr not in resList:
+            resList.append(aggr)
+        
+    return resList
+
 def stringArrayToCommaString(stringArray):
     # given a string array, returns a single string of each element in the same string separated by commas and spaces
     return ', '.join(stringArray)
@@ -108,15 +134,6 @@ def setStructFields(stringArray):
     for str in stringArray:
         out = out + f"self.{str} = {str}\n            "
     return out
-
-def accountAvg(F):
-    # given F input array, adds strings for count and sum if a group has avg aggregate and if not already included
-    # ex. F = ['avg_1_quant'] >> outputs ['avg_1_quant', 'count_1_quant', 'sum_1_quant']
-    # ex. F = ['avg_1_quant', 'count_1_quant'] >> outputs ['avg_1_quant', 'count_1_quant', 'sum_1_quant']
-    # ex. F = ['avg_1_quant', 'avg_2_quant', 'max_1_quant'] >> outputs ['avg_1_quant', 'count_1_quant', 'sum_1_quant', 'avg_2_quant', 'count_2_quant', 'sum_2_quant', 'max_1_quant']
-    # ex. F = ['max_1_quant'] >> outputs ['max_1_quant']
-    return []
-
 
 def matchGroupByString(V):
     # given group by variables array
@@ -129,14 +146,27 @@ def matchGroupByString(V):
         out = out + f"e.{attrib} == row['{attrib}']"
     return out
 
+def insertSuchThatClauses(n, SVect):
+    if n == 0 or len(SVect) == 0:
+        return ""
+    out = "and ("
+    for i in range(1, n+1):
+        if (i > 1):
+            out = out + " or "
+        out = out + f"(sc == {i} and {SVect[i+1]})"
+    return out + ")"
+
 def insertGroupCases(n, F):
     # given aggregate function array, and number of grouping variables
     # produces the cases for match that update the aggregates for each grouping variable
     FDecomp = map(lambda f: f.split('_'), F)
     # FDecomp splits f functions into [function, grouping, attrib]
-    out = ""
+    if(len(F) == 0):
+        return ""
+    out = "match sc:"
     for i in range(n+1):
-        out = out + f"""case {str(i)}:
+        out = out + f"""
+                        case {str(i)}:
                             """
         for fd in FDecomp:
             if int(fd[1]) != i:
@@ -164,8 +194,11 @@ def insertGroupCases(n, F):
 
 
 def main():
+    # get inputs
     S, n, V, F, SVect, G = setInputTest()
-    W = "row['year']== 2016" #cuz nothing comes up 2009
+    # account for avg in F
+    F = accountAvg(F)
+    W = "row['year'] == 2016" #cuz nothing comes up 2009
 
     """
     This is the generator code. It should take in the MF structure and generate the code
@@ -182,6 +215,7 @@ def main():
         if {"True" if len(W) == 0 else W}:
             T.append(row)
     
+    # create structure for mf_struct
     class struct:
         def __init__(self, {stringArrayToCommaString(V)}, {stringArrayToCommaString(F)}):
             {setStructFields(V)}{setStructFields(F)}
@@ -199,10 +233,9 @@ def main():
         for row in T:
             for i, e in enumerate(mf_struct):
                 # check if grouping variable is satisfied
-                if {matchGroupByString(V)} and {'True'}: # true replaced with formatted such that clause for sc
+                if {matchGroupByString(V)}{insertSuchThatClauses(n, SVect)}:
                     # update aggregates
-                    match sc:
-                        {insertGroupCases(n, F)}
+                    {insertGroupCases(n, F)}
                 else:
                     continue 
 

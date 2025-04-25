@@ -211,7 +211,7 @@ def main():
     S, n, V, F, SVect, G = getInput()
     # account for avg in F
     F = accountAvg(F)
-    # reformat G to work for looping through mf_struct
+    # reformat G to work for looping
     G = toE_replace(V, F, G)
     
 

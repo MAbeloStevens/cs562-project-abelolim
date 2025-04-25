@@ -124,6 +124,17 @@ def accountAvg(F): # <- input array, F = aggregateList
         
     return resList
 
+def toE_replace(V,F,string):
+    arr = V+F
+    string = " "+string
+    for col in arr:
+        if "_" not in col:
+            col = " "+col
+            string=string.replace(col, " e."+ (col.strip()))
+        else:
+            string=string.replace(col, "e."+ (col.strip()))
+    return string.strip()
+
 def stringArrayToCommaString(stringArray):
     # given a string array, returns a single string of each element in the same string separated by commas and spaces
     return ', '.join(stringArray)
@@ -200,7 +211,9 @@ def main():
     S, n, V, F, SVect, G = getInput()
     # account for avg in F
     F = accountAvg(F)
-    W = "row['year'] == 2016" #cuz nothing comes up 2009
+    # reformat G to work for looping through mf_struct
+    G = toE_replace(V, F, G)
+    
 
     """
     This is the generator code. It should take in the MF structure and generate the code

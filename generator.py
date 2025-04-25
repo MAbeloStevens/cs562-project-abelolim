@@ -65,8 +65,10 @@ def getInput():
             else:
                 print("Input not a string")
                 
+            where = input("enter where clause (optional, Press enter to skip): ")
+            
             # print (select, numGroupVar, groupAttr, aggreFunc, predicate, having) #DEBUG
-            return select, numGroupVar, groupAttr, aggreFunc, predicate, having
+            return select, numGroupVar, groupAttr, aggreFunc, predicate, having, where
             
         case 'file':
             # getting directory path
@@ -85,6 +87,7 @@ def getInput():
                 aggreFunc = Phi[3].strip().split(", ")
                 predicate = Phi[4].strip().split(", ")
                 having = Phi[5].strip()
+                where = Phi[6].strip()
                 
                 file.close()
             
@@ -92,7 +95,7 @@ def getInput():
                 print("file not found")
 
             # print (select, numGroupVar, groupAttr, aggreFunc, predicate, having) #DEBUG
-            return select, numGroupVar, groupAttr, aggreFunc, predicate, having
+            return select, numGroupVar, groupAttr, aggreFunc, predicate, having, where
         
         # No input recognized
         case _:
@@ -208,7 +211,7 @@ def insertGroupCases(n, F):
 
 def main():
     # get inputs
-    S, n, V, F, SVect, G = getInput()
+    S, n, V, F, SVect, G, W = getInput()
     # account for avg in F
     F = accountAvg(F)
     # reformat G to work for looping

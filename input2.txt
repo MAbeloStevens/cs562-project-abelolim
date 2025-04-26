@@ -1,0 +1,7 @@
+prod, max_1_quant, min_1_quant, max_2_quant, min_2_quant
+2
+prod
+min_1_quant, max_1_quant, min_2_quant, max_2_quant
+row['year'] == 2016, row['year'] == 2020
+
+

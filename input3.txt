@@ -1,0 +1,7 @@
+cust, max_1_quant, max_2_quant, max_3_quant
+3
+cust
+max_1_quant, max_2_quant, max_3_quant
+row['month'] == 1, row['month'] == 2, row['month'] == 3
+
+

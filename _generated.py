@@ -24,13 +24,13 @@ def query():
     # get the table
     T = []
     for row in cur:
-        if row['year'] == 2016:
+        if True:
             T.append(row)
     
     # create structure for mf_struct
     class struct:
-        def __init__(self, prod, count_1_quant, sum_1_quant, avg_1_quant, count_2_quant, sum_2_quant, avg_2_quant, count_3_quant, sum_3_quant, avg_3_quant):
-            self.prod = prod
+        def __init__(self, cust, count_1_quant, sum_1_quant, avg_1_quant, count_2_quant, sum_2_quant, avg_2_quant, count_3_quant, sum_3_quant, avg_3_quant):
+            self.cust = cust
             self.count_1_quant = count_1_quant
             self.sum_1_quant = sum_1_quant
             self.avg_1_quant = avg_1_quant
@@ -45,17 +45,17 @@ def query():
     # scan table to fill mf_struct
     mf_struct = []
     for row in T:
-        if next((i for i, e in enumerate(mf_struct) if e.prod == row['prod']), -1) != -1:
+        if next((i for i, e in enumerate(mf_struct) if e.cust == row['cust']), -1) != -1:
             continue
         else:
-            mf_struct.append(struct(row['prod'], 0, 0, 0, 0, 0, 0, 0, 0, 0))
+            mf_struct.append(struct(row['cust'], 0, 0, 0, 0, 0, 0, 0, 0, 0))
 
     # start scanning to calculate aggregates
     for sc in range(4):
         for row in T:
             for i, e in enumerate(mf_struct):
                 # check if grouping variable is satisfied
-                if e.prod == row['prod']and ((sc == 1 and row['state'] == 'NY') or (sc == 2 and row['state'] == 'NJ') or (sc == 3 and row['state'] == 'CT')):
+                if e.cust == row['cust'] and ((sc == 0) or (sc == 1 and row['state'] == 'NY') or (sc == 2 and row['state'] == 'NJ') or (sc == 3 and row['state'] == 'CT')):
                     # update aggregates
                     match sc:
                         case 0:
@@ -80,11 +80,11 @@ def query():
 
     # construct output in _global with having in mind
     for e in mf_struct:
-        if True:
-            _global.append([e.prod, e.avg_1_quant, e.avg_2_quant, e.avg_3_quant])
+        if e.avg_1_quant > e.avg_2_quant or e.avg_1_quant > e.avg_3_quant:
+            _global.append([e.cust, e.avg_1_quant, e.avg_2_quant, e.avg_3_quant])
     
     
-    return tabulate.tabulate(_global, headers=['prod', 'avg_1_quant', 'avg_2_quant', 'avg_3_quant'], tablefmt="psql")
+    return tabulate.tabulate(_global, headers=['cust', 'avg_1_quant', 'avg_2_quant', 'avg_3_quant'], tablefmt="psql")
 
 def main():
     print(query())

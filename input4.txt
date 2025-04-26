@@ -1,0 +1,7 @@
+state, year, count_0_prod, count_1_prod, count_2_prod, count_3_prod
+3
+state, year
+count_0_prod, count_1_prod, count_2_prod, count_3_prod
+row['prod'] == 'Ham', row['prod'] == 'Fish', row['prod'] == 'Eggs'
+count_1_prod >=  count_0_prod / 10
+

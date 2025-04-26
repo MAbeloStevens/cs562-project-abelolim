@@ -1,0 +1,7 @@
+month, sum_1_quant, count_1_quant, max_1_quant, min_1_quant, avg_2_quant
+2
+month
+sum_1_quant, count_1_quant, max_1_quant, min_1_quant, avg_2_quant
+row['cust'] == 'Sam', row['state'] == 'PA'
+
+

@@ -18,24 +18,20 @@ def query():
     conn = psycopg2.connect("dbname="+dbname+" user="+user+" password="+password,
                             cursor_factory=psycopg2.extras.DictCursor)
     cur = conn.cursor()
-    cur.execute("""WITH ny as (
-    SELECT prod, avg(quant) ny_avg
-    FROM Sales
-    WHERE state = 'NY'
-    GROUP BY prod
-), nj as (
-    SELECT prod, avg(quant) nj_avg
-    FROM Sales
-    WHERE state = 'NJ'
-    GROUP BY prod
-), ct as (
-    SELECT prod, avg(quant) ct_avg
-    FROM Sales
-    WHERE state = 'CT'
-    GROUP BY prod
+    cur.execute("""WITH year2016 as (
+	SELECT prod, max(quant) max16, min(quant) min16
+	FROM Sales
+	WHERE year = 2016
+	GROUP BY prod
+), year2020 as (
+	SELECT prod, max(quant) max20, min(quant) min20
+	FROM Sales
+	WHERE year = 2020
+	GROUP BY prod
 )
-SELECT prod, ny_avg, nj_avg, ct_avg
-FROM ny natural join nj natural join ct WHERE ny_avg > nj_avg or ny_avg > ct_avg""")
+SELECT *
+FROM year2016 NATURAL JOIN year2020 ORDER BY prod
+""")
 
     return tabulate.tabulate(cur.fetchall(),
                              headers="keys", tablefmt="psql")

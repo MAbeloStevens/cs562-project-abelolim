@@ -90,12 +90,12 @@ def getInput():
                 where = Phi[6].strip()
                 
                 file.close()
+                return select, numGroupVar, groupAttr, aggreFunc, predicate, having, where
             
             else:
                 print("file not found")
 
             # print (select, numGroupVar, groupAttr, aggreFunc, predicate, having) #DEBUG
-            return select, numGroupVar, groupAttr, aggreFunc, predicate, having, where
         
         # No input recognized
         case _:
@@ -164,10 +164,11 @@ def insertSuchThatClauses(n, SVect):
     if n == 0 or len(SVect) == 0:
         return ""
     out = "and ("
-    for i in range(1, n+1):
-        if (i > 1):
-            out = out + " or "
-        out = out + f"(sc == {i} and {SVect[i-1]})"
+    for i in range(0, n+1):
+        if (i == 0):
+            out = out + "(sc == 0)"
+        else:
+            out = out + f" or (sc == {i} and {SVect[i-1]})"
     return out + ")"
 
 def insertGroupCases(n, F):
@@ -251,7 +252,7 @@ def main():
         for row in T:
             for i, e in enumerate(mf_struct):
                 # check if grouping variable is satisfied
-                if {matchGroupByString(V)}{insertSuchThatClauses(n, SVect)}:
+                if {matchGroupByString(V)} {insertSuchThatClauses(n, SVect)}:
                     # update aggregates
                     {insertGroupCases(n, F)}
                 else:

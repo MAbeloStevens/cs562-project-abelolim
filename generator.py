@@ -139,11 +139,13 @@ def toE_replace(V,F,string):
     return string.strip()
 
 def stringArrayToCommaString(stringArray):
-    # given a string array, returns a single string of each element in the same string separated by commas and spaces
+    # given a string array, returns a single string of each element 
+    # in the same string separated by commas and spaces
     return ', '.join(stringArray)
 
 def setStructFields(stringArray):
-    # given a string array, returns a multiline string to set struct fields given input parameters
+    # given a string array, returns a multiline string 
+    # to set struct fields given input parameters
     out = ""
     for str in stringArray:
         out = out + f"self.{str} = {str}\n            "
@@ -216,7 +218,6 @@ def main():
     # account for avg in F
     F = accountAvg(F)
     # reformat G to work for looping
-    G = toE_replace(V, F, G)
     
 
     """
@@ -260,7 +261,7 @@ def main():
 
     # construct output in _global with having in mind
     for e in mf_struct:
-        if {"True" if len(G) == 0 else G}:
+        if {"True" if len(G) == 0 else toE_replace(V, F, G)}:
             _global.append([{stringArrayToCommaString(map(lambda s: f"e.{s}", S))}])
     """
 
